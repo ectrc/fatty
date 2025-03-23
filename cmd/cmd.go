@@ -5,7 +5,9 @@ import (
 	"fatty/cmd/codes"
 	"fatty/cmd/fatty"
 	"fatty/cmd/help"
+	"fatty/services/config"
 	"fmt"
+	"time"
 )
 
 type Command interface {
@@ -30,6 +32,13 @@ var (
 )
 
 func RunCommand(str string) error {
+	config := config.Config()
+
+	if config.ENABLE_START_TIME {
+		fmt.Printf("Waiting until '%s' to start.\n", config.START_TIME)
+		time.Sleep(time.Until(config.START_TIME))
+	}
+
 	if handler, ok := commandLookup[CommandType(str)]; ok {
 		return handler.Execute()
 	}

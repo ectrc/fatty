@@ -2,11 +2,15 @@ package config
 
 import (
 	"fatty/helpers"
+	"time"
 
 	"github.com/joho/godotenv"
 )
 
 type FattyConfig struct {
+	ENABLE_START_TIME bool
+	START_TIME time.Time
+
 	EXTRA_LOGGING bool
 	EMAIL_DOMAIN string
 
@@ -26,6 +30,9 @@ func NewFattyConfig() *FattyConfig {
 	godotenv.Load(".env")
 
 	return &FattyConfig{
+		ENABLE_START_TIME: helpers.Enviroment("ENABLE_START_TIME", "false") == "true",
+		START_TIME: helpers.ParseTime(helpers.Enviroment("START_TIME")),
+
 		EXTRA_LOGGING: helpers.Enviroment("EXTRA_LOGGING", "false") == "true",
 		EMAIL_DOMAIN: helpers.Enviroment("EMAIL_DOMAIN"),
 
