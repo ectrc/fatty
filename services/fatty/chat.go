@@ -71,9 +71,9 @@ func NewChatSession(client *helpers.ProxiedClient, user *FattyUser) (*ChatSessio
 	return session, nil
 }
 
-func (c *ChatSession) HelpMeBail(client *helpers.ProxiedClient) error {
+func (c *ChatSession) HelpMeBail(client *helpers.ProxiedClient) (string, error) {
 	if client == nil {
-		return fmt.Errorf("invalid arguments")
+		return "", fmt.Errorf("invalid arguments")
 	}
 
 	response := client.Post("https://chatcontroller.foodtools.io/v1/chat/query?stream=false", helpers.JSON{
@@ -106,7 +106,7 @@ func (c *ChatSession) HelpMeBail(client *helpers.ProxiedClient) error {
 		"x-jet-application": "OneWeb",
 	})
 	if response.Err != nil {
-		return response.Err
+		return "", response.Err
 	}
 
 	type ChatResponse struct {
@@ -116,12 +116,12 @@ func (c *ChatSession) HelpMeBail(client *helpers.ProxiedClient) error {
 	}
 	chatResponse := helpers.ToStruct[ChatResponse](response.Body)
 	if chatResponse == nil {
-		return fmt.Errorf("failed to parse chat response: %s", response.Body)
+		return "", fmt.Errorf("failed to parse chat response: %s", response.Body)
 	}
 	
 	if config.Config().EXTRA_LOGGING {
 		fmt.Printf("%s\n", chatResponse.Message)
 	}
 
-	return nil
+	return chatResponse.Message, nil
 }

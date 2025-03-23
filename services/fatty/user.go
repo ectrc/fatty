@@ -16,7 +16,6 @@ type FattyUser struct {
 	Location *LocationResponse
 
 	Email string
-	Username string
 	Password string
 	Device string
 	Version string
@@ -31,7 +30,6 @@ func NewFattyUser(client *helpers.ProxiedClient) (*FattyUser, error) {
 		Device: gofakeit.UUID(),
 	}
 	user.Email = fmt.Sprintf("%s%s%d@atmos.chat", user.Person.FirstName, user.Person.LastName, gofakeit.Int8())
-	user.Username = fmt.Sprintf("%s%s%d", user.Person.LastName, gofakeit.Adjective(), gofakeit.Int16())
 	user.Password = gofakeit.Password(true, true, true, true, false, 12)
 
 	version, err := GetVersion(client)
@@ -72,6 +70,28 @@ func NewFattyUser(client *helpers.ProxiedClient) (*FattyUser, error) {
 	}
 
 	user.OtacToken = &otacResponse.Token
+	return user, nil
+}
+
+func NewFattyUserFromUsernamePassword(client *helpers.ProxiedClient, username, password string) (*FattyUser, error) {
+	user := &FattyUser{
+		Email: username,
+		Password: password,
+		Device: gofakeit.UUID(),
+	}
+
+	version, err := GetVersion(client)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get version: %s", err)
+	}
+	user.Version = version
+
+	location, err := Location(client)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get location: %s", err)
+	}
+	user.Location = location
+
 	return user, nil
 }
 

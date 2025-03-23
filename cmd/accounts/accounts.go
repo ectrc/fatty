@@ -18,11 +18,6 @@ func (g AccountsGeneratorCommand) Execute() error {
 	}
 	defer file.Close()
 
-	client := helpers.NewProxiedClient()
-	if config.PROXY_ENABLED {
-		client.SetProxy(config.PROXY_URL)
-	}
-
 	for i := 0; i < config.ACC_GEN_THREAD_COUNT; i++ {
 		go func(file *helpers.HelperFile) {
 			for {
