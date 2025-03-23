@@ -8,6 +8,7 @@ import (
 
 type FattyConfig struct {
 	EXTRA_LOGGING bool
+	EMAIL_DOMAIN string
 
 	ACC_GEN_FILE_LOCATION string
 	ACC_GEN_THREAD_COUNT int
@@ -26,6 +27,7 @@ func NewFattyConfig() *FattyConfig {
 
 	return &FattyConfig{
 		EXTRA_LOGGING: helpers.Enviroment("EXTRA_LOGGING", "false") == "true",
+		EMAIL_DOMAIN: helpers.Enviroment("EMAIL_DOMAIN"),
 
 		ACC_GEN_FILE_LOCATION: helpers.Enviroment("ACC_GEN_FILE_LOCATION"),
 		ACC_GEN_THREAD_COUNT: helpers.Parse[int](helpers.Enviroment("ACC_GEN_THREAD_COUNT", "0")),

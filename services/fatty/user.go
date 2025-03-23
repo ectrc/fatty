@@ -25,11 +25,13 @@ type FattyUser struct {
 }
 
 func NewFattyUser(client *helpers.ProxiedClient) (*FattyUser, error) {
+	config := config.Config()
+
 	user := &FattyUser{
 		Person: gofakeit.Person(),
 		Device: gofakeit.UUID(),
 	}
-	user.Email = fmt.Sprintf("%s%s%d@atmos.chat", user.Person.FirstName, user.Person.LastName, gofakeit.Int8())
+	user.Email = fmt.Sprintf("%s%s%d@%s", user.Person.FirstName, user.Person.LastName, gofakeit.Int8(), config.EMAIL_DOMAIN)
 	user.Password = gofakeit.Password(true, true, true, true, false, 12)
 
 	version, err := GetVersion(client)
