@@ -2,6 +2,7 @@ package fatty
 
 import (
 	"fatty/helpers"
+	"fatty/services/config"
 	"fmt"
 
 	"github.com/brianvoe/gofakeit/v7"
@@ -63,8 +64,10 @@ func NewChatSession(client *helpers.ProxiedClient, user *FattyUser) (*ChatSessio
 		return nil, fmt.Errorf("invalid chat response: %s", response.Body)
 	}
 
-	fmt.Printf("%s\n", chatResponse.Message)
-	
+	if config.Config().EXTRA_LOGGING {
+		fmt.Printf("%s\n", chatResponse.Message)
+	}
+
 	return session, nil
 }
 
@@ -115,8 +118,10 @@ func (c *ChatSession) HelpMeBail(client *helpers.ProxiedClient) error {
 	if chatResponse == nil {
 		return fmt.Errorf("failed to parse chat response: %s", response.Body)
 	}
-
-	fmt.Printf("%s\n", chatResponse.Message)
+	
+	if config.Config().EXTRA_LOGGING {
+		fmt.Printf("%s\n", chatResponse.Message)
+	}
 
 	return nil
 }

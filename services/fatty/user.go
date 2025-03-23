@@ -3,6 +3,7 @@ package fatty
 import (
 	"encoding/base64"
 	"fatty/helpers"
+	"fatty/services/config"
 	"fmt"
 	"net/url"
 	"regexp"
@@ -133,7 +134,9 @@ func (u *FattyUser) Profile(client *helpers.ProxiedClient) error {
 		return fmt.Errorf("failed to parse response")
 	}
 
-	// fmt.Printf("%s\n", data.String())
+	if config.Config().EXTRA_LOGGING {
+		fmt.Printf("%s\n", data.Bytes())
+	}
 	
 	return nil
 }

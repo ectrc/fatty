@@ -2,6 +2,7 @@ package fatty
 
 import (
 	"fatty/helpers"
+	"fatty/services/config"
 	"fatty/services/fatty"
 	"fmt"
 )
@@ -13,17 +14,29 @@ func (f FattyCommand) Execute() error {
 }
 
 func ProcessFatty() error {
+	config := config.Config()
+
 	client := helpers.NewProxiedClient()
-	client.SetProxy("http://ufb2602a657b905d1-zone-custom-region-gb:ufb2602a657b905d1@118.193.58.115:2334")
+	if config.PROXY_ENABLED {
+		client.SetProxy(config.PROXY_URL)
+	}
 
 	user, err := fatty.NewFattyUser(client)
 	if err != nil {
 		return fmt.Errorf("failed to create user: %s", err)
 	}
 
+	if config.EXTRA_LOGGING {
+		fmt.Printf("%s\n", helpers.StructToJSON(user).Bytes())
+	}
+
 	err = user.Login(client)
 	if err != nil {
 		return fmt.Errorf("failed to login: %s", err)
+	}
+
+	if config.EXTRA_LOGGING {
+		fmt.Printf("%s\n", *user.AccessToken)
 	}
 
 	err = user.Profile(client)
@@ -36,8 +49,6 @@ func ProcessFatty() error {
 		return fmt.Errorf("failed to set newsletter: %s", err)
 	}
 
-	fmt.Printf("%s:%s\n", user.Email, user.Password)
-
 	chat, err := fatty.NewChatSession(client, user)
 	if err != nil {
 		return fmt.Errorf("failed to create chat session: %s", err)
@@ -47,6 +58,8 @@ func ProcessFatty() error {
 	if err != nil {
 		return fmt.Errorf("failed to help me bail: %s", err)
 	}
+
+	fmt.Printf("%s:%s\n", user.Email, user.Password)
 
 	return nil
 }

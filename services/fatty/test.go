@@ -2,6 +2,7 @@ package fatty
 
 import (
 	"fatty/helpers"
+	"fatty/services/config"
 
 	"fmt"
 )
@@ -38,7 +39,9 @@ func Location(client *helpers.ProxiedClient) (*LocationResponse, error) {
 		return nil, fmt.Errorf("failed to get location, body: %s", result.Body)
 	}
 
-	fmt.Printf("%s %s %s\n", locationResponse.Country, locationResponse.As, locationResponse.Query)
+	if config.Config().EXTRA_LOGGING {
+		fmt.Printf("%s %s %s\n", locationResponse.Country, locationResponse.As, locationResponse.Query)
+	}
 
 	return locationResponse, nil
 }

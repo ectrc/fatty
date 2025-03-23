@@ -33,3 +33,9 @@ func StructToJSON[T any](data *T) JSON {
 	bytes, _ := json.MarshalIndent(data, "", "  ")
 	return ToJSON(bytes)
 }
+
+func Parse[T any](data string) T {
+	var result T
+	_ = json.Unmarshal([]byte(data), &result)
+	return result
+}

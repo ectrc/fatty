@@ -7,10 +7,8 @@ import (
 )
 
 func main() {
-	os.Args = append(os.Args, "fatty")
-
 	if len(os.Args) < 2 {
-		fmt.Printf("Usage: %s <command> [args]\n", os.Args[0])
+		fmt.Printf("usage: 'fatty <command> [args]'\nnote: use 'fatty help' to get a list of all of the possible commands\n")
 		return
 	}
 
