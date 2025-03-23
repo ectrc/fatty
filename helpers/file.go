@@ -22,10 +22,14 @@ func File(path_ string) (*HelperFile, error) {
 			return nil, fmt.Errorf("failed to create directory: %s %s", real, err)
 		}
 
+		fmt.Printf("created path: %s\n", real)
+
 		file, err = os.Create(path_)
 		if err != nil {
 			return nil, fmt.Errorf("failed to create file: %s %s", path_, err)
 		}
+
+		fmt.Printf("created file: %s\n", path_)
 	}
 
 	if err != nil {
