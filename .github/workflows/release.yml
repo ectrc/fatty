@@ -1,0 +1,51 @@
+name: Go Build & Release
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    name: Build Go Binary
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: "1.23.6"
+
+      - name: Build Binary
+        run: |
+          GOOS=windows GOARCH=amd64 go build -o fatty.exe .
+
+      - name: Get Latest Release
+        id: get_release
+        uses: mukunku/tag-exists-action@v1.6.0
+        with:
+          tag: master
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create Release (if not exists)
+        if: steps.get_release.outputs.exists == 'false'
+        id: create_release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: master
+          name: Release
+          body: "Automated release. Make sure you have `.env` in the same directory as the binary."
+          draft: false
+          prerelease: false
+          files: |
+            fatty.exe
+
+      - name: Upload Binaries to Release
+        if: steps.get_release.outputs.exists == 'true'
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            fatty.exe
