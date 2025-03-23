@@ -6,6 +6,7 @@ import (
 	"fatty/services/fatty"
 	"fmt"
 	"strings"
+	"sync"
 )
 
 type CodeGeneratorCommand struct{}
@@ -29,13 +30,15 @@ func (g CodeGeneratorCommand) Execute() error {
 		return fmt.Errorf("failed to read accounts file: %s", err)
 	}
 
+	waiter := sync.WaitGroup{}
 	length := len(accounts) / config.CODE_GEN_THREAD_COUNT
 
 	for i := 0; i < config.CODE_GEN_THREAD_COUNT; i++ {
+		waiter.Add(1)
 		subset := make([]string, length)
 		copy(subset, accounts[i*length:(i+1)*length])
 
-		go func(subset []string) {
+		go func(subset []string, watier *sync.WaitGroup) {
 			for _, account := range subset {
 				split := strings.Split(account, ":")
 				if len(split) != 2 {
@@ -48,10 +51,12 @@ func (g CodeGeneratorCommand) Execute() error {
 					fmt.Printf("failed to generate new code: %s\n", err)
 				}
 			}
-		}(subset)
+
+			waiter.Done()
+		}(subset, &waiter)
 	}
 
-	<-make(chan bool)
+	waiter.Wait()
 
 	return nil
 }
